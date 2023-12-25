@@ -2,9 +2,14 @@
 
 Ddos capabale utility for experimenting and learning purposes.
 For max performance this would not be ran in iex, rather in compiled form.
-There is room to tweak the connection pool opts depending on the number of desired bots.
 
-I thought it is an interesting idea to have a separate control panel if you will, that is what Cachex is for. This way the bots can keep running and be changed on the fly rather than stoppped, reconfigured, and restarted or sending messages to all the bots with commands.
+I made this version using Mint directly in each genserver. I also made a version with Req and Finch but all these (unsurprisingly) hit the same limitation.
+
+emfile error or [label: {:erl_prim_loader, :file_error}, report: ~c"File operation error: emfile. Target: sys.beam. Function: get_file. Process: code_server."]
+Meaning the system (local device) cannot make that many connections as I want.
+HttPosion and Hackney was more successful/forgiving here I was able to run more bots on that version.
+I also removed the Cachex command center here, no need for it here.
+
 
 ## How to run
 
