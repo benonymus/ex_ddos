@@ -11,6 +11,8 @@ defmodule ExDdos.Bot do
     {:ok, [hackney: [pool: :big_pool], proxy: proxy_opts(args)]}
   end
 
+  defp loop, do: Process.send(self(), :loop, [])
+
   defp proxy_opts(scheme: "socks5", host: host, port: port), do: {:socks5, host, port}
 
   defp proxy_opts(host: host, port: port), do: {host, port}
@@ -45,6 +47,4 @@ defmodule ExDdos.Bot do
         exit(:normal)
     end
   end
-
-  defp loop, do: Process.send(self(), :loop, [])
 end
