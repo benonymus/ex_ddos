@@ -7,12 +7,10 @@ defmodule ExDdos.Application do
 
   @impl true
   def start(_type, _args) do
-    :ok = :hackney_pool.start_pool(:big_pool, timeout: 15000, max_connections: 100)
-
     children = [
       # a bit overkill for this
-      Supervisor.child_spec({Cachex, name: :config_store}, id: :cachex_1),
-      Supervisor.child_spec({Cachex, name: :counts}, id: :cachex_2),
+      {Cachex, name: :counts},
+      {Registry, [keys: :duplicate, name: BotRegistry, partitions: System.schedulers_online()]},
       {DynamicSupervisor, strategy: :one_for_one, name: ExDdos.BotSupervisor}
     ]
 
