@@ -7,6 +7,7 @@ There is room to tweak the connection pool opts depending on the number of desir
 I thought it is an interesting idea to have a separate control panel if you will, that is what Cachex is for. This way the bots can keep running and be changed on the fly rather than stoppped, reconfigured, and restarted or sending messages to all the bots with commands.
 
 For an alternative versio check the mint_version branch.
+The registry is a nice improvement there.
 
 ## How to run
 
